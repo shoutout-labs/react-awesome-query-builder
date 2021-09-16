@@ -1,6 +1,6 @@
 {
   "name": "@shoutout-labs/react-awesome-query-builder-shoutout",
-  "version": "5.0.15",
+  "version": "5.0.16",
   "description": "User-friendly query builder for React. Demo: https://ukrbublik.github.io/react-awesome-query-builder",
   "keywords": [
     "query-builder",
@@ -99,7 +99,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.2.10",
     "@shoutout-labs/react-awesome-query-builder-shoutout": "^5.0.13",
-    "@shoutout-labs/shoutout-themes-enterprise": "^2.0.39",
+    "@shoutout-labs/shoutout-themes-enterprise": "^2.0.53",
     "antd": "^4.0.0",
     "material-ui-confirm": "^2.0.1",
     "react": "^16.x || ^17.x",
