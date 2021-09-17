@@ -1,8 +1,14 @@
 import React, { useCallback, useMemo } from "react";
 import { Form } from "@shoutout-labs/shoutout-themes-enterprise";
 
-export default ({ items, setField, selectedKey, readonly, ...rest }) => {
-
+export default ({
+  items,
+  setField,
+  selectedKey,
+  readonly,
+  config,
+  ...rest
+}) => {
   // const [selectedField, setSelectedField] = useState([]);
 
   // console.debug("props:", rest);
@@ -19,26 +25,25 @@ export default ({ items, setField, selectedKey, readonly, ...rest }) => {
   //   })
   // );
 
-  const onChange = useCallback((e) => {
-
-    setField(e[0] ? e[0].path : "");
-  }, [setField])
-
+  const onChange = useCallback(
+    (e) => {
+      setField(e[0] ? e[0].path : "");
+    },
+    [setField]
+  );
 
   const options = useMemo(() => {
-
-
     return items.reduce((result, field) => {
       // const field = dataset[fieldKey];
       const { items: subItems, path, label, disabled } = field;
 
       if (!disabled) {
         if (subItems) {
-          subItems.forEach(item => {
+          subItems.forEach((item) => {
             if (!item.disabled) {
-              result.push({ "_grp": label, path: item.path, label: item.label });
+              result.push({ _grp: label, path: item.path, label: item.label });
             }
-          })
+          });
         } else {
           result.push({ path: path, label });
         }
@@ -49,17 +54,19 @@ export default ({ items, setField, selectedKey, readonly, ...rest }) => {
       //   result.push(<option disabled={disabled} key={path} value={path}>{label}</option>);
       // }
       return result;
-    }, [])
-  }, [items])
-
-
+    }, []);
+  }, [items]);
 
   const selectedField = useMemo(() => {
     if (selectedKey) {
       return [options.find((item) => item.path === selectedKey)];
     }
     return [];
-  }, [selectedKey])
+  }, [selectedKey]);
+
+  const isOperatorType = useMemo(() => {
+    return !!config.operators[selectedKey];
+  }, [config, selectedKey]);
 
   return (
     <Form.Select
@@ -72,8 +79,9 @@ export default ({ items, setField, selectedKey, readonly, ...rest }) => {
       placeholder="Select"
       groupBy="_grp"
       labelKey="label"
+      readonly={!isOperatorType && selectedField.length > 0} //persist current field selection except for operators
     />
-    // <select 
+    // <select
     //   onChange={onChange}
     //   value={hasValue ? selectedKey : ""}
     //   disabled={readonly}
