@@ -12,18 +12,23 @@ export default (props) => {
     ...rest
   } = props;
 
- 
   const selectedValue = useMemo(() => {
     return value ? [value] : [];
   }, [value]);
 
   const onChangeValue = useCallback(
-    (e) => { 
+    (e) => {
       setValue(e.length > 0 ? e[0].value : undefined);
     },
     [setValue]
   );
 
+  const onBlur = useCallback(
+    (e) => {
+      setValue(e.target.value);
+    },
+    [setValue]
+  );
 
   const options = useMemo(() => {
     //This is a hack to pass the values since asyncFetch isn't functioning
@@ -32,7 +37,7 @@ export default (props) => {
     }
     return [];
   }, [fieldDefinition]);
- 
+
   return (
     <Form.Select
       labelKey="title"
@@ -41,11 +46,10 @@ export default (props) => {
       selected={selectedValue}
       disabled={readonly}
       options={options}
-      // onInputChange={onChangeInput}
+      onBlur={onBlur}
       size="sm"
       placeholder={placeholder}
       {...rest}
     />
   );
-  
 };

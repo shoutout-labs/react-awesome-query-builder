@@ -1,8 +1,16 @@
 import React, { Component } from "react";
 import {
-  Query, Builder, Utils,
+  Query,
+  Builder,
+  Utils,
   //types:
-  ImmutableTree, Config, BuilderProps, JsonTree, JsonLogicTree, BasicConfig
+  ImmutableTree,
+  Config,
+  BuilderProps,
+  JsonTree,
+  JsonLogicTree,
+  BasicConfig,
+  Widgets,
 } from "react-awesome-query-builder";
 import throttle from "lodash/throttle";
 import loadConfig from "./config";
@@ -11,10 +19,31 @@ import loadedInitLogic from "./init_logic";
 import { Card } from "@shoutout-labs/shoutout-themes-enterprise";
 import "@shoutout-labs/shoutout-themes-enterprise/lib/themes/enterprise-loyalty/bootstrap.min.css";
 
+const { VanillaTextWidget ,VanillaSelectWidget} = Widgets;
 const stringify = JSON.stringify;
-const { queryBuilderFormat, jsonLogicFormat, queryString, mongodbFormat, sqlFormat, getTree, checkTree, loadTree, uuid, loadFromJsonLogic, isValidTree } = Utils;
-const preStyle = { backgroundColor: "darkgrey", margin: "10px", padding: "10px" };
-const preErrorStyle = { backgroundColor: "lightpink", margin: "10px", padding: "10px" };
+const {
+  queryBuilderFormat,
+  jsonLogicFormat,
+  queryString,
+  mongodbFormat,
+  sqlFormat,
+  getTree,
+  checkTree,
+  loadTree,
+  uuid,
+  loadFromJsonLogic,
+  isValidTree,
+} = Utils;
+const preStyle = {
+  backgroundColor: "darkgrey",
+  margin: "10px",
+  padding: "10px",
+};
+const preErrorStyle = {
+  backgroundColor: "lightpink",
+  margin: "10px",
+  padding: "10px",
+};
 
 const initialSkin = "vanilla";
 const emptyInitValue: JsonTree = { id: uuid(), type: "group" };
@@ -24,145 +53,104 @@ const loadedConfig = {
   operators: {
     ...BasicConfig.operators,
     array_empty: {
-      label: 'Empty',
-      reversedOp: 'array_not_empty',
-      labelForFormat: 'NULL',
+      label: "Empty",
+      reversedOp: "array_not_empty",
+      labelForFormat: "NULL",
       cardinality: 0,
-      formatOp: (field, _op, value, _valueSrc, _valueType, opDef) => `${field} ${opDef.labelForFormat}`,
-      mongoFormatOp: (field, op, value) => ({ [field]: { '$exist': true, '$size': 0 } }),
+      formatOp: (field, _op, value, _valueSrc, _valueType, opDef) =>
+        `${field} ${opDef.labelForFormat}`,
+      mongoFormatOp: (field, op, value) => ({
+        [field]: { $exist: true, $size: 0 },
+      }),
     },
     array_not_empty: {
-      label: 'Not Empty',
-      reversedOp: 'array_empty',
-      labelForFormat: 'NOT NULL',
+      label: "Not Empty",
+      reversedOp: "array_empty",
+      labelForFormat: "NOT NULL",
       cardinality: 0,
-      formatOp: (field, _op, value, _valueSrc, _valueType, opDef) => `${field} ${opDef.labelForFormat}`,
-      mongoFormatOp: (field, op, value) => ({ [field]: { '$exist': true, '$not': { '$size': 0 } } }),
-    }
+      formatOp: (field, _op, value, _valueSrc, _valueType, opDef) =>
+        `${field} ${opDef.labelForFormat}`,
+      mongoFormatOp: (field, op, value) => ({
+        [field]: { $exist: true, $not: { $size: 0 } },
+      }),
+    },
   },
   fields: {
-    "_created_on": {
-      "label": "Created On",
-      "type": "date"
-    },
-    "_last_seen_on": {
-      "label": "Last Seen On",
-      "type": "date"
-    },
-    "address": {
-      "label": "Address",
-      "type": "text",
-      "operators": [
-        "equal",
-        "array_empty",
-        "array_not_empty"
-      ]
-    },
-    "birth_date": {
-      "label": "Birth Date",
-      "type": "date"
-    },
-    "birth_day_of_month": {
-      "label": "Birth Day Of Month",
-      "type": "text"
-    },
-    "birth_month": {
-      "label": "Birth Month",
-      "type": "text"
-    },
-    "company": {
-      "label": "Company",
-      "type": "text"
-    },
-    "country": {
-      "label": "Country",
-      "type": "text"
-    },
-    "country_code": {
-      "label": "Country Code",
-      "type": "text"
-    },
-    "email": {
-      "label": "Email",
-      "type": "text"
-    },
-    "gender": {
-      "label": "Gender",
-      "type": "text"
-    },
-    "location": {
-      "label": "Location",
-      "type": "text"
-    },
-    "loyalty_id": {
-      "label": "Loyalty Id",
-      "type": "text"
-    },
-    "mobile_number": {
-      "label": "Mobile Number",
-      "type": "text"
-    },
-    "name": {
-      "label": "Name",
-      "type": "text"
-    },
-    "points": {
-      "label": "Points",
-      "type": "number"
-    },
-    "purchases_count": {
-      "label": "Purchases Count",
-      "type": "number"
-    },
-    "purchases_value": {
-      "label": "Purchases Value",
-      "type": "number"
-    },
-    "region_id": {
-      "label": "Region Id",
-      "type": "text"
-    },
-    "register_on": {
-      "label": "Register On",
-      "type": "date"
-    },
-    "source": {
-      "label": "Source",
-      "type": "text"
-    },
-    "tags": {
-      "label": "Tags",
-      "type": "select",
-      "fieldSettings": {
-        "listValues": [{
-          "title": "Loyalty User",
-          "value": "loyalty_user"
-        },
-        {
-          "title": "Gold",
-          "value": "gold"
-        }
-      ],
-        "showSearch": true
+    _created_on: { label: "Created On", type: "date" },
+    _last_seen_on: { label: "Last Seen On", type: "date" },
+    address: {
+      label: "Address",
+      type: "text",
+      // listValues: [{ title: "ABC", value: "abc" }],
+      // allowCustomValues: false,
+      // validateValue: () => true,
+      // useAsyncSearch:true,\
+      useAsyncSearch: true,
+      useLoadMore: true,
+      forceAsyncSearch: false,
+      allowCustomValues: false,
+      asyncFetch: (search) => {
+        console.debug("FETCHING...",search);
+        return ({ values: [{ title: "ABC", value: "abc" },{ title: "ABCD", value: "abcd" }], hasMore: false });
       },
-      "operators": [
+    },
+    birth_date: { label: "Birth Date", type: "date" },
+    birth_day_of_month: { label: "Birth Day Of Month", type: "text" },
+    birth_month: { label: "Birth Month", type: "text" },
+    company: { label: "Company", type: "text" },
+    country: { label: "Country", type: "text" },
+    country_code: { label: "Country Code", type: "text" },
+    email: { label: "Email", type: "text" },
+    gender: { label: "Gender", type: "text" },
+    location: { label: "Location", type: "text" },
+    loyalty_id: { label: "Loyalty Id", type: "text" },
+    mobile_number: { label: "Mobile Number", type: "text" },
+    name: { label: "Name", type: "text" },
+    points: { label: "Points", type: "number" },
+    purchases_count: { label: "Purchases Count", type: "number" },
+    purchases_value: { label: "Purchases Value", type: "number" },
+    region_id: { label: "Region Id", type: "text" },
+    register_on: { label: "Register On", type: "date" },
+    source: { label: "Source", type: "text" },
+    tags: {
+      label: "Tags",
+      type: "select",
+      operators: [
         "select_any_in",
         "select_not_any_in",
         "array_empty",
-        "array_not_empty"
-      ]
+        "array_not_empty",
+      ],
+      fieldSettings: {
+        listValues: [{ title: "Loyalty User", value: "loyalty_user" }],
+        showSearch: true,
+      },
+      valueSources: ["value"],
     },
-    "tier_points": {
-      "label": "Tier Points",
-      "type": "number"
-    }
-  }
-};//loadConfig(initialSkin);
-let initValue: JsonTree = loadedInitValue && Object.keys(loadedInitValue).length > 0 ? loadedInitValue as JsonTree : emptyInitValue;
-const initLogic: JsonLogicTree = loadedInitLogic && Object.keys(loadedInitLogic).length > 0 ? loadedInitLogic as JsonLogicTree : undefined;
+    tier_points: { label: "Tier Points", type: "number" },
+  },
+  widgets: {
+    ...BasicConfig.widgets,
+    text: {
+      ...BasicConfig.widgets.text,
+      factory: (props) => {
+        console.debug("TEXT factory", props);
+        return <VanillaTextWidget {...props} allowNew={true} clearButton />;
+      },
+    },
+  },
+}; //loadConfig(initialSkin);
+let initValue: JsonTree =
+  loadedInitValue && Object.keys(loadedInitValue).length > 0
+    ? (loadedInitValue as JsonTree)
+    : emptyInitValue;
+const initLogic: JsonLogicTree =
+  loadedInitLogic && Object.keys(loadedInitLogic).length > 0
+    ? (loadedInitLogic as JsonLogicTree)
+    : undefined;
 let initTree: ImmutableTree;
 //initTree = checkTree(loadTree(initValue), loadedConfig);
-initTree = checkTree(loadFromJsonLogic(initLogic, loadedConfig), loadedConfig); // <- this will work same  
+initTree = checkTree(loadFromJsonLogic(initLogic, loadedConfig), loadedConfig); // <- this will work same
 
 // Trick to hot-load new config when you edit `config.tsx`
 const updateEvent = new CustomEvent<CustomEventDetail>("update", {
@@ -170,7 +158,7 @@ const updateEvent = new CustomEvent<CustomEventDetail>("update", {
     config: loadedConfig,
     _initTree: initTree,
     _initValue: initValue,
-  }
+  },
 });
 window.dispatchEvent(updateEvent);
 
@@ -183,10 +171,13 @@ interface CustomEventDetail {
 interface DemoQueryBuilderState {
   tree: ImmutableTree;
   config: Config;
-  skin: String,
+  skin: String;
 }
 
-export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderState> {
+export default class DemoQueryBuilder extends Component<
+  {},
+  DemoQueryBuilderState
+> {
   private immutableTree: ImmutableTree;
   private config: Config;
 
@@ -199,43 +190,48 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
   }
 
   state = {
-    tree: checkTree(loadTree({ "id": uuid(), "type": "group" }), loadedConfig),
+    tree: checkTree(loadTree({ id: uuid(), type: "group" }), loadedConfig),
     config: loadedConfig,
-    skin: initialSkin
+    skin: initialSkin,
   };
 
-  render = () => (
-    <div>
-      <Query
-        {...this.state.config}
-        value={this.state.tree}
-        onChange={this.onChange}
-        renderBuilder={this.renderBuilder}
-      />
+  render = () => {
+    console.debug("Loaded COnfig", loadedConfig);
+    return (
+      <div>
+        <Query
+          {...this.state.config}
+          value={this.state.tree}
+          onChange={this.onChange}
+          renderBuilder={this.renderBuilder}
+        />
 
-      <select value={this.state.skin} onChange={this.changeSkin}>
-        <option key="vanilla">vanilla</option>
-        <option key="antd">antd</option>
-        <option key="material">material</option>
-      </select>
-      <button onClick={this.resetValue}>reset</button>
-      <button onClick={this.clearValue}>clear</button>
+        <select value={this.state.skin} onChange={this.changeSkin}>
+          <option key="vanilla">vanilla</option>
+          <option key="antd">antd</option>
+          <option key="material">material</option>
+        </select>
+        <button onClick={this.resetValue}>reset</button>
+        <button onClick={this.clearValue}>clear</button>
 
-      <div className="query-builder-result">
-        {this.renderResult(this.state)}
+        <div className="query-builder-result">
+          {this.renderResult(this.state)}
+        </div>
       </div>
-    </div>
-  )
+    );
+  };
 
   onConfigChanged = (e: Event) => {
-    const { detail: { config, _initTree, _initValue } } = e as CustomEvent<CustomEventDetail>;
+    const {
+      detail: { config, _initTree, _initValue },
+    } = e as CustomEvent<CustomEventDetail>;
     console.log("Updating config...");
     this.setState({
       config,
     });
     initTree = _initTree;
     initValue = _initValue;
-  }
+  };
 
   resetValue = () => {
     this.setState({
@@ -249,7 +245,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
     this.setState({
       skin,
       config,
-      tree: checkTree(this.state.tree, config)
+      tree: checkTree(this.state.tree, config),
     });
   };
 
@@ -271,7 +267,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
         </Card.Body>
       </Card>
     </div>
-  )
+  );
 
   onChange = (immutableTree: ImmutableTree, config: Config) => {
     this.immutableTree = immutableTree;
@@ -279,13 +275,21 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
     this.updateResult();
 
     const jsonTree = getTree(immutableTree); //can be saved to backend
-  }
+
+    console.debug("Tree:", jsonTree);
+  };
 
   updateResult = throttle(() => {
     this.setState({ tree: this.immutableTree, config: this.config });
-  }, 100)
+  }, 100);
 
-  renderResult = ({ tree: immutableTree, config }: { tree: ImmutableTree, config: Config }) => {
+  renderResult = ({
+    tree: immutableTree,
+    config,
+  }: {
+    tree: ImmutableTree;
+    config: Config;
+  }) => {
     const isValid = isValidTree(immutableTree);
     const { logic, data, errors } = jsonLogicFormat(immutableTree, config);
     return (
@@ -321,14 +325,19 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
         </div>
         <hr />
         <div>
-          <a href="http://jsonlogic.com/play.html" target="_blank" rel="noopener noreferrer">jsonLogicFormat</a>:
-          {errors.length > 0
-            && <pre style={preErrorStyle}>
-              {stringify(errors, undefined, 2)}
-            </pre>
-          }
-          {!!logic
-            && <pre style={preStyle}>
+          <a
+            href="http://jsonlogic.com/play.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            jsonLogicFormat
+          </a>
+          :
+          {errors.length > 0 && (
+            <pre style={preErrorStyle}>{stringify(errors, undefined, 2)}</pre>
+          )}
+          {!!logic && (
+            <pre style={preStyle}>
               {"// Rule"}:<br />
               {stringify(logic, undefined, 2)}
               <br />
@@ -336,7 +345,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
               {"// Data"}:<br />
               {stringify(data, undefined, 2)}
             </pre>
-          }
+          )}
         </div>
         <hr />
         <div>
@@ -354,6 +363,5 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
         </div> */}
       </div>
     );
-  }
-
+  };
 }
