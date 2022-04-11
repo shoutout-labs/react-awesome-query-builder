@@ -43,6 +43,7 @@ export default ({
       options={listValues}
       size="sm"
       placeholder="Select"
+      allowNew={allowCustomValues}
       {...rest}
     />
   );
