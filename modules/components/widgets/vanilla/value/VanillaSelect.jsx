@@ -1,32 +1,51 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 // import { mapListValues } from "../../../../utils/stuff";
 import { Form } from "@shoutout-labs/shoutout-themes-enterprise";
-export default ({ listValues, value, setValue, allowCustomValues, readonly }) => {
-  // const renderOptions = () => 
+export default ({
+  listValues=[],
+  value,
+  setValue,
+  allowCustomValues,
+  readonly,
+  ...rest
+}) => {
+  // const renderOptions = () =>
   //   mapListValues(listValues, ({title, value}) => {
   //     return <option key={value} value={value}>{title}</option>;
   //   });
 
-  const onChange = e => setValue(e[0] ? e[0] : "");
-  // const selectedValue = (() => {
-  //   if (value) {
-  //     return [listValues.find((item) => item === value)];
-  //   }
-  //   return [];
-  // }, [value, listValues])
+  const onChange = useCallback(
+    (e) => {
+      setValue(e[0] ? e[0].value : "");
+    },
+    [setValue]
+  );
 
-  // console.debug(value, listValues)
+  const selectedValue = useMemo(() => {
+    if (value) {
+      return [
+        listValues.find((item) => item.value === value) || {
+          title: value,
+          value,
+        },
+      ];
+    }
+    return [];
+  }, [value, listValues]);
+
   return (
     <Form.Select
+      labelKey="title"
       id="select-typeahead"
       onChange={onChange}
-      selected={value ? [value] : []}
+      selected={selectedValue}
       disabled={readonly}
       options={listValues}
       size="sm"
       placeholder="Select"
+      allowNew={allowCustomValues}
+      {...rest}
     />
-
   );
   // <select
   //     onChange={onChange}

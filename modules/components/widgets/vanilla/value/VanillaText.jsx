@@ -1,31 +1,55 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { Form } from "@shoutout-labs/shoutout-themes-enterprise";
 export default (props) => {
-  const { value, setValue, config, readonly, placeholder, maxLength } = props;
-  const onChange = e => {
-    let val = e.target.value;
-    if (val === "")
-      val = undefined; // don't allow empty value
-    setValue(val);
-  };
-  const textValue = value || "";
+  const {
+    value,
+    setValue,
+    config,
+    readonly,
+    placeholder,
+    maxLength,
+    fieldDefinition,
+    ...rest
+  } = props;
+
+  const selectedValue = useMemo(() => {
+    return value ? [value] : [];
+  }, [value]);
+
+  const onChangeValue = useCallback(
+    (e) => {
+      setValue(e.length > 0 ? e[0].value : undefined);
+    },
+    [setValue]
+  );
+
+  const onBlur = useCallback(
+    (e) => {
+      setValue(e.target.value);
+    },
+    [setValue]
+  );
+
+  const options = useMemo(() => {
+    //This is a hack to pass the values since asyncFetch isn't functioning
+    if (fieldDefinition && fieldDefinition.asyncFetch) {
+      return fieldDefinition.asyncFetch("").values || [];
+    }
+    return [];
+  }, [fieldDefinition]);
+
   return (
-    <Form.Control
-      size="sm"
-      type="text"
-      value={textValue}
-      placeholder={placeholder}
+    <Form.Select
+      labelKey="title"
+      id="select-typeahead"
+      onChange={onChangeValue}
+      selected={selectedValue}
       disabled={readonly}
-      onChange={onChange}
-      maxLength={maxLength}
+      options={options}
+      onBlur={onBlur}
+      size="sm"
+      placeholder={placeholder}
+      {...rest}
     />
-    // <input
-    //   type="text" 
-    //   value={textValue} 
-    //   placeholder={placeholder} 
-    //   disabled={readonly} 
-    //   onChange={onChange}
-    //   maxLength={maxLength}
-    // />
   );
 };
