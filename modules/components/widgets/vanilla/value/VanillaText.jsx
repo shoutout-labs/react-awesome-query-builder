@@ -18,14 +18,14 @@ export default (props) => {
 
   const onChangeValue = useCallback(
     (e) => {
-      setValue(e.length > 0 ? (e[0].title||e[0].value) : undefined);
+      setValue(e.length > 0 ? (e[0].value||e[0].title) : undefined);
     },
     [setValue]
   );
 
   const onBlur = useCallback(
     (e) => {
-      setValue(e.length > 0 ? (e[0].title||e[0].value) : undefined);
+      // setValue(e.length > 0 ? (e[0].title||e[0].value) : undefined);
     },
     [setValue]
   );
