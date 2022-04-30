@@ -25,7 +25,7 @@ export default (props) => {
 
   const onBlur = useCallback(
     (e) => {
-      // setValue(e.length > 0 ? (e[0].title||e[0].value) : undefined);
+      setValue(e.currentTarget.value|| undefined);
     },
     [setValue]
   );
