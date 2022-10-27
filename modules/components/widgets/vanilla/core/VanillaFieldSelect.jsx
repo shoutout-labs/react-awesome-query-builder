@@ -73,7 +73,7 @@ export default ({
       id="select-field-typeahead"
       selected={selectedField}
       onChange={onChange}
-      disabled={readonly}
+      disabled={readonly||(!isOperatorType && selectedField.length > 0)}
       options={options}
       size="sm"
       placeholder="Select"
