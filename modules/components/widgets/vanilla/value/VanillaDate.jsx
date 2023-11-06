@@ -14,10 +14,11 @@ export default (props) => {
 
   return (
     <FormDate
-      date={value ? moment(value).toDate() : undefined}
+      date={value ? moment(value).toDate() : ""}
       disabled={readonly}
       onChange={onChange}
       dateDisplayFormat={valueFormat}
+      selectText="Select a date"
       size="sm"
     />
   );
